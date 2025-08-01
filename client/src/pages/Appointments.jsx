@@ -17,7 +17,7 @@ const Appointments = () => {
   const { loading } = useSelector((state) => state.root);
   const { userId } = jwt_decode(localStorage.getItem("token"));
 
-  const getAllAppoint = async (e) => {
+  const getAllAppoint = async () => {
     try {
       dispatch(setLoading(true));
       const temp = await fetchData(
@@ -49,9 +49,9 @@ const Appointments = () => {
           }
         ),
         {
-          success: "Appointment booked successfully",
-          error: "Unable to book appointment",
-          loading: "Booking appointment...",
+          success: "Appointment marked completed",
+          error: "Unable to mark appointment",
+          loading: "Updating status...",
         }
       );
 
@@ -62,7 +62,7 @@ const Appointments = () => {
   };
 
   return (
-    <>
+    <div className="page-wrapper">
       <Navbar />
       {loading ? (
         <Loading />
@@ -72,27 +72,25 @@ const Appointments = () => {
 
           {appointments.length > 0 ? (
             <div className="appointments">
-              <table>
-                <thead>
-                  <tr>
-                    <th>S.No</th>
-                    <th>Doctor</th>
-                    <th>Patient</th>
-                    <th>Appointment Date</th>
-                    <th>Appointment Time</th>
-                    <th>Booking Date</th>
-                    <th>Booking Time</th>
-                    <th>Status</th>
-                    {userId === appointments[0].doctorId?._id ? (
-                      <th>Action</th>
-                    ) : (
-                      <></>
-                    )}
-                  </tr>
-                </thead>
-                <tbody>
-                  {appointments?.map((ele, i) => {
-                    return (
+              <div className="table-scroll">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>S.No</th>
+                      <th>Doctor</th>
+                      <th>Patient</th>
+                      <th>Appointment Date</th>
+                      <th>Appointment Time</th>
+                      <th>Booking Date</th>
+                      <th>Booking Time</th>
+                      <th>Status</th>
+                      {userId === appointments[0]?.doctorId?._id && (
+                        <th>Action</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {appointments.map((ele, i) => (
                       <tr key={ele?._id}>
                         <td>{i + 1}</td>
                         <td>
@@ -101,14 +99,18 @@ const Appointments = () => {
                             ele?.doctorId?.lastname}
                         </td>
                         <td>
-                          {ele?.userId?.firstname + " " + ele?.userId?.lastname}
+                          {ele?.userId?.firstname +
+                            " " +
+                            ele?.userId?.lastname}
                         </td>
                         <td>{ele?.date}</td>
                         <td>{ele?.time}</td>
-                        <td>{ele?.createdAt.split("T")[0]}</td>
-                        <td>{ele?.updatedAt.split("T")[1].split(".")[0]}</td>
+                        <td>{ele?.createdAt?.split("T")[0]}</td>
+                        <td>
+                          {ele?.updatedAt?.split("T")[1]?.split(".")[0]}
+                        </td>
                         <td>{ele?.status}</td>
-                        {userId === ele?.doctorId?._id ? (
+                        {userId === ele?.doctorId?._id && (
                           <td>
                             <button
                               className={`btn user-btn accept-btn ${
@@ -120,14 +122,12 @@ const Appointments = () => {
                               Complete
                             </button>
                           </td>
-                        ) : (
-                          <></>
                         )}
                       </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
             <Empty />
@@ -135,7 +135,67 @@ const Appointments = () => {
         </section>
       )}
       <Footer />
-    </>
+
+      <style>{`
+        /* Ensure full height layout */
+        .page-wrapper {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
+
+        .notif-section {
+          flex: 1;
+          padding: 1rem 0;
+        }
+
+        .appointments {
+          width: 100%;
+          overflow-x: auto;
+        }
+
+        .table-scroll {
+          overflow-x: auto;
+          width: 100%;
+        }
+
+        .table-scroll table {
+          min-width: 1000px;
+          width: 100%;
+          border-collapse: collapse;
+        }
+
+        .table-scroll th,
+        .table-scroll td {
+          padding: 10px;
+          text-align: center;
+          border: 1px solid #ddd;
+          white-space: nowrap;
+        }
+
+        .table-scroll::-webkit-scrollbar {
+          height: 6px;
+        }
+
+        .table-scroll::-webkit-scrollbar-thumb {
+          background-color: #888;
+          border-radius: 8px;
+        }
+
+        .table-scroll::-webkit-scrollbar-track {
+          background: #f1f1f1;
+        }
+
+        /* Prevent page horizontal scroll */
+        html, body {
+          margin: 0;
+          padding: 0;
+          overflow-x: hidden;
+        }
+      `}</style>
+    </div>
   );
 };
+
 export default Appointments;
