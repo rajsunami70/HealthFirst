@@ -72,7 +72,7 @@ const Footer = () => {
             target="_blank"
             rel="noreferrer"
           >
-            HealthFirst
+            RapidReach Care
           </a>{" "}
           © {new Date().getFullYear()}
         </div>
